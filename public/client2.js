@@ -9,18 +9,6 @@ sendMessageButton.addEventListener('click', () => {
   textarea.value = ''; // Clear the textarea after sending the message
 });
 
-// Use socket.on to listen for events from the server
-// socket.on('username-received', (data) => {
-//   // Log the entire data object to see its structure
-//   console.log('Received data:', data);
-//   console.log('seen22')
-//   // Assuming username is a property of the data object
-//   const username = data.username;
-//   // Update the HTML element with the received username
-//   console.log(`Received username: ${username}`);
-//   const usernameElement = document.getElementById('username');
-//   usernameElement.textContent = username;
-// });
 
 function getUsername() {
   let user = prompt("Please enter your name:");
@@ -45,7 +33,6 @@ socket.on('previous-messages', (messages) => {
 let user = getUsername();
 
 if (user) {
-  console.log('seen33')
   // Emit the entered username to the server
   socket.emit('user-joined', user);
 } else {
@@ -90,7 +77,38 @@ function blockChat() {
 let clickedMessageElement;
 // // Add an event listener to the "x" button in the reply interface
 document.getElementById('close-reply').addEventListener('click', closeReplyInterface);
+// messageArea.addEventListener('contextmenu', (e) => {
+//   e.preventDefault(); // Prevent the default context menu from appearing
+//   const messageElement = e.target.closest('.message');
 
+//   if (messageElement) {
+//     // Store the clicked message element
+//     clickedMessageElement = messageElement;
+
+//     // Show the context menu near the clicked message
+//     const contextMenu = document.getElementById('context-menu');
+//     contextMenu.innerHTML = ''; // Clear the menu before adding options
+
+//     const replyOption = document.createElement('li');
+//     replyOption.textContent = 'Reply';
+//     replyOption.addEventListener('click', () => {
+//       openReplyInterface();
+//     });
+
+//     const reportOption = document.createElement('li');
+//     reportOption.textContent = 'Report';
+//     reportOption.addEventListener('click', () => {
+//       reportChat(messageElement);
+//     });
+
+//     contextMenu.appendChild(replyOption);
+//     contextMenu.appendChild(reportOption);
+//     contextMenu.style.display = 'block';
+//     contextMenu.style.left = `${e.pageX}px`;
+//     contextMenu.style.top = `${e.pageY}px`;
+//   }
+// });
+// Handle right-click on a chat message to show the context menu
 messageArea.addEventListener('contextmenu', (e) => {
   e.preventDefault(); // Prevent the default context menu from appearing
   const messageElement = e.target.closest('.message');
@@ -383,17 +401,17 @@ function startTagging() {
 }
 
 
-socket.on('user-joined', (message) => {
+socket.on('user-joined', (joinedUser) => {
   let msg = {
-    user: message.user,
-    messageType: message.messageType,
-    message: message.message,
+    user: joinedUser,
+    messageType: 'text', // Add a messageType to differentiate user-joined message
+    message: `${joinedUser} joined the chat`, // The message content for user-joined
   };
   console.log('User Joined:', msg);
   appendMessage(msg, 'incoming');
   scrollToBottom();
-});
 
+});
 
 // Receive messages
 socket.on('message', (msg) => {
